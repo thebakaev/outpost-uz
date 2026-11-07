@@ -4,7 +4,7 @@ import { supabase } from './supabase'
 import {
   Search, ChevronDown, Crosshair, Hammer, Recycle, Shield, Boxes, BookOpen,
   Menu, ArrowUpRight, Zap, Flame, Pickaxe, HeartPulse, Shirt, Package,
-  X, MapPin, Plus, Minus, Trash2, Calculator, Compass, Building2, Home,
+  X, MapPin, Plus, Minus, Trash2,
   Info, ExternalLink
 } from 'lucide-react'
 
@@ -267,7 +267,7 @@ const monumentPuzzles: Record<string,MonumentPuzzle> = {
   'Military Tunnels': { cards:'Green + Blue + Red — xonaga qarab', fuses:'Puzzle yo‘liga qarab farq qiladi', route:['Kuchli qurol, ko‘p o‘q-dori va medkit olib boring.','Tunnel ichidagi NPC’larni ehtiyotkorlik bilan tozalang.','Rangli kartalar bilan tegishli eshiklarni oching.','Chuqur loot xonasiga kirishdan oldin chiqish yo‘lini belgilang.'], reward:'Elite/Military loot', note:'Tunnel ichidagi ko‘p bosqichli eshiklar sababli yagona fuse sonini ko‘rsatish noto‘g‘ri bo‘lishi mumkin.' },
 }
 
-type RecycleItem = { name:string; category:string; yields:{name:string;amount:number}[] }
+type RecycleItem = { name:string; category:string; image_url?: string; yields:{name:string;amount:number}[] }
 const recycleItems: RecycleItem[] = [
  {name:'Gears',category:'Komponentlar',yields:[{name:'Scrap',amount:12},{name:'Metal Fragments',amount:15}]},
  {name:'Metal Blade',category:'Komponentlar',yields:[{name:'Scrap',amount:2},{name:'Metal Fragments',amount:18}]},
@@ -401,7 +401,6 @@ function AdSlot({ placement }: { placement: 'home_top' | 'wiki_inline' | 'footer
     let active = true
     async function load() {
       if (!supabase) return
-      const now = new Date().toISOString()
       const { data } = await supabase.from('advertisements').select('id,title,image_url,target_url,placement,starts_at,ends_at')
         .eq('placement', placement).eq('is_active', true).limit(20)
       const current = Date.now()
@@ -708,7 +707,7 @@ export default function App() {
           {airfieldMapMode==='puzzle' && <div className="airfield-puzzle-flow"><div className="puzzle-flow-meta"><span>KERAK: 2 ELECTRIC FUSE</span><span>GREEN + BLUE KEYCARD</span></div><div className="puzzle-flow-grid"><div className="puzzle-flow-node"><b>01</b><strong>Terminal / ATC</strong><small>Fuse box #1 · timer switch</small></div><i>↓</i><div className="puzzle-flow-node"><b>02</b><strong>Tunnel entrance</strong><small>Yerosti yo‘lagiga tushing</small></div><i>↓</i><div className="puzzle-flow-node"><b>03</b><strong>Green door</strong><small>Green Keycard bilan oching</small></div><i>↓</i><div className="puzzle-flow-node"><b>04</b><strong>Armory corridor</strong><small>Fuse box #2 · elektrni yoqing</small></div><i>↓</i><div className="puzzle-flow-node puzzle-flow-final"><b>05</b><strong>Blue door / Armory</strong><small>Blue Keycard · Red Keycard loot</small></div></div><p className="puzzle-flow-warning"><Info size={14}/> Bu yo‘nalish umumiy qo‘llanma. Server versiyasi va monument holatiga qarab ayrim tafsilotlar farq qilishi mumkin.</p></div>}
           <div className="airfield-map-legend"><span><i className="legend-orange"/> Puzzle / karta eshigi</span><span><i className="legend-blue"/> Xizmat / recycler</span><span><i className="legend-green"/> Muhim nuqta</span></div>
           <small className="map-disclaimer">Sxema navigatsion yordam uchun soddalashtirilgan; aniq bino va loot koordinatalari server seediga qarab farq qiladi.</small>
-        </section>}<div className="detail-block"><h3><MapPin size={16}/> Hudud haqida</h3><p>{m.loot}</p></div><div className="detail-block"><h3><Shield size={16}/> Borishdan oldin</h3><ul>{m.tips.map(t=><li key={t}>{t}</li>)}</ul></div>{(m.puzzle || monumentPuzzles[m.name]) && <div className="puzzle-panel"><div className="puzzle-heading"><h3><Zap size={16}/> Puzzle qo‘llanmasi</h3><span>KEYCARD RUN</span></div><div className="puzzle-requirements"><div><small>KERAKLI KEYCARD</small><b>{(m.puzzle || monumentPuzzles[m.name]).cards}</b></div><div><small>FUSE</small><b>{(m.puzzle || monumentPuzzles[m.name]).fuses}</b></div></div><ol>{(m.puzzle || monumentPuzzles[m.name]).route.map((step,i)=><li key={step}><span>{String(i+1).padStart(2,'0')}</span>{step}</li>)}</ol><div className="puzzle-reward"><small>PUZZLE MUKOFOTI</small><b>{(m.puzzle || monumentPuzzles[m.name]).reward}</b></div>{(m.puzzle || monumentPuzzles[m.name]).note && <p className="puzzle-note"><Info size={14}/>{(m.puzzle || monumentPuzzles[m.name]).note}</p>}</div>}<div className="detail-foot"><Info size={15}/> Puzzle talablari va loot server versiyasi, map seed va yangilanishlarga qarab farq qilishi mumkin. Ma’lumotni safar oldidan tekshiring.</div>{(m.source_url || monumentSourceUrls[m.name]) && <a className="monument-source-link" href={m.source_url || monumentSourceUrls[m.name]} target="_blank" rel="noreferrer">Ma’lumot manbasi: RustHelp <ExternalLink size={13}/></a>}</article> })()}
+        </section>}<div className="detail-block"><h3><MapPin size={16}/> Hudud haqida</h3><p>{m.loot}</p></div><div className="detail-block"><h3><Shield size={16}/> Borishdan oldin</h3><ul>{m.tips.map((t: string)=><li key={t}>{t}</li>)}</ul></div>{(m.puzzle || monumentPuzzles[m.name]) && <div className="puzzle-panel"><div className="puzzle-heading"><h3><Zap size={16}/> Puzzle qo‘llanmasi</h3><span>KEYCARD RUN</span></div><div className="puzzle-requirements"><div><small>KERAKLI KEYCARD</small><b>{(m.puzzle || monumentPuzzles[m.name]).cards}</b></div><div><small>FUSE</small><b>{(m.puzzle || monumentPuzzles[m.name]).fuses}</b></div></div><ol>{(m.puzzle || monumentPuzzles[m.name]).route.map((step: string,i: number)=><li key={step}><span>{String(i+1).padStart(2,'0')}</span>{step}</li>)}</ol><div className="puzzle-reward"><small>PUZZLE MUKOFOTI</small><b>{(m.puzzle || monumentPuzzles[m.name]).reward}</b></div>{(m.puzzle || monumentPuzzles[m.name]).note && <p className="puzzle-note"><Info size={14}/>{(m.puzzle || monumentPuzzles[m.name]).note}</p>}</div>}<div className="detail-foot"><Info size={15}/> Puzzle talablari va loot server versiyasi, map seed va yangilanishlarga qarab farq qilishi mumkin. Ma’lumotni safar oldidan tekshiring.</div>{(m.source_url || monumentSourceUrls[m.name]) && <a className="monument-source-link" href={m.source_url || monumentSourceUrls[m.name]} target="_blank" rel="noreferrer">Ma’lumot manbasi: RustHelp <ExternalLink size={13}/></a>}</article> })()}
       </div>
     </main>}
 

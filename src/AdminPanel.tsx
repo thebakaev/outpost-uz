@@ -126,13 +126,14 @@ export default function AdminPanel({ profile, onSignOut }: { profile: AdminProfi
 
   async function loadMedia() {
     if (!supabase) return
+    const mediaStorage = supabase.storage.from('outpost-media')
     setMediaLoading(true); setError('')
-    const { data, error: mediaError } = await supabase.storage.from('outpost-media').list('', {
+    const { data, error: mediaError } = await mediaStorage.list('', {
       limit: 100, sortBy: { column: 'created_at', order: 'desc' }
     })
     if (mediaError) setError(`Media Library yuklanmadi: ${mediaError.message}`)
     else setMediaFiles((data || []).filter(x => x.name).map(x => {
-      const { data: publicData } = supabase.storage.from('outpost-media').getPublicUrl(x.name)
+      const { data: publicData } = mediaStorage.getPublicUrl(x.name)
       return { ...x, url: publicData.publicUrl }
     }))
     setMediaLoading(false)
